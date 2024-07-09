@@ -26,7 +26,7 @@ class DatabaseHelper {
       onCreate: (db, version) async {
         await db.execute(
           'CREATE TABLE invoices('
-              'id INTEGER PRIMARY KEY AUTOINCREMENT,'
+              'id INTEGER PRIMARY KEY,'
               'order_id TEXT,'
               'discount TEXT,'
               'subtotal TEXT,'
@@ -54,7 +54,6 @@ class DatabaseHelper {
   Future<List<Invoices>> getInvoices() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('invoices');
-
     return List.generate(maps.length, (i) {
       return Invoices.fromJson(maps[i]);
     });

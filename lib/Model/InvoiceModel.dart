@@ -1,5 +1,5 @@
 class Invoices {
-  String? id;
+  int? id;
   String? orderId;
   String? discount;
   String? subtotal;
@@ -25,18 +25,19 @@ class Invoices {
 
   factory Invoices.fromJson(Map<String, dynamic> json) {
     return Invoices(
-      id: json['id']?.toString(),
+      id: json['id'],
       orderId: json['order_id'],
-      discount: json['discount'],
+      discount: json['discount'].toString(), // Convert to String
       subtotal: json['subtotal'],
       grandTotal: json['grand_total'],
       cName: json['c_name'],
       cAddress: json['c_address'],
       cPhone: json['c_phone'],
       date: json['date'],
-      user: json['user'],
+      user: json['user'].toString(), // If 'user' can be integer, convert to String
     );
   }
+
 
   Map<String, dynamic> toJson() {
     return {

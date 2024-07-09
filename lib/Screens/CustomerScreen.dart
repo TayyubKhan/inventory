@@ -1,8 +1,7 @@
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
-
 import '../Components/Drawer.dart';
 import '../Model/customer_model.dart';
 import '../ViewModel/CustomerVIewModel.dart';
@@ -30,13 +29,12 @@ class _CustomerScreenState extends State<CustomerScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 15),
             child: InkWell(
-                onTap: () async {
-                  await provider.getFromApi();
-                  setState(() {});
-                },
-                child: const Icon(
-                  Icons.refresh,
-                )),
+              onTap: () async {
+                await provider.getFromApi();
+                setState(() {});
+              },
+              child: const Icon(Icons.refresh),
+            ),
           )
         ],
       ),
@@ -45,34 +43,12 @@ class _CustomerScreenState extends State<CustomerScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
-              // Build your DataTable here with snapshot.data
-              return SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
-                    columns: const [
-                      DataColumn(label: Text('ID')),
-                      DataColumn(label: Text('Name')),
-                      DataColumn(label: Text('Owner')),
-                      DataColumn(label: Text('Phone')),
-                      DataColumn(label: Text('Area')),
-                      DataColumn(label: Text('Address')),
-                    ],
-                    rows: snapshot.data!
-                        .map(
-                          (data) => DataRow(cells: [
-                        DataCell(Text(data.id.toString() ?? '')),
-                        DataCell(Text(data.name ?? '')),
-                        DataCell(SelectableText(data.owner ?? '')),
-                        DataCell(SelectableText(data.phone ?? '')),
-                        DataCell(Text(data.area ?? '')),
-                        DataCell(Text(data.address?.toString() ?? '')),
-                      ]),
-                    )
-                        .toList(),
-                  ),
-                ),
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final customer = snapshot.data![index];
+                  return _buildCustomerCard(customer);
+                },
               );
             } else {
               return const Center(child: Text('No Data'));
@@ -82,11 +58,30 @@ class _CustomerScreenState extends State<CustomerScreen> {
               child: CircularProgressIndicator(color: Colors.black),
             );
           } else {
-            return Container();
+            return Container(); // Placeholder widget
           }
         },
       ),
+    );
+  }
 
+  Widget _buildCustomerCard(CustomerModel customer) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('ID: ${customer.id ?? ''}'),
+            Text('Name: ${customer.name ?? ''}'),
+            Text('Owner: ${customer.owner ?? ''}'),
+            Text('Phone: ${customer.phone ?? ''}'),
+            Text('Area: ${customer.area ?? ''}'),
+            Text('Address: ${customer.address ?? ''}'),
+          ],
+        ),
+      ),
     );
   }
 }

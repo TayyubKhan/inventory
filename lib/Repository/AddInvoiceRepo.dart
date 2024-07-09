@@ -7,17 +7,11 @@ class AddInvoiceRepo {
     required dynamic cName,
     required dynamic cAddress,
     required dynamic cPhone,
+    required dynamic subtotal,
     required List<Product> products,
   }) async {
     final sp = await SharedPreferences.getInstance();
     try {
-      double subtotal = 0;
-      double grandTotal = 0;
-      for (int i = 0; i < products.length; i++) {
-        subtotal = subtotal +
-            double.parse(products[i].totalPrice().toString()) *
-                double.parse(products[i].quantity.toString());
-      }
       var formData = {
         'c_name': cName,
         'c_address': cAddress,

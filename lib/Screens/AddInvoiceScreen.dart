@@ -146,6 +146,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                             customer['id'] == value.selectedCustomer);
 
                     await AddInvoiceRepo().addInvoiceApi(
+                      subtotal: value.total_price,
                       cName: selectedCustomer['name'],
                       cAddress: value.customerAddressController.text,
                       cPhone: value.customerPhoneController.text,
@@ -180,7 +181,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
               child: value.isLoading2
                   ? const Center(
                       child: CircularProgressIndicator(
-                      color: Colors.black,
+                      color: Colors.white,
                       strokeWidth: 2,
                     ))
                   : const Text(
@@ -424,8 +425,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                               keyboardType: TextInputType.number,
                               onChanged: (value) {
                                 setState(() {
-                                  product.quantity =
-                                      int.tryParse(value) ?? 1;
+                                  product.quantity = int.tryParse(value) ?? 1;
                                   _invoiceProvider.totalprice();
                                 });
                               },
