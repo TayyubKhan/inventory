@@ -31,7 +31,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
             padding: const EdgeInsets.only(right: 15),
             child: InkWell(
                 onTap: () async {
-                  await provider.fetchCustomers();
+                  await provider.getFromApi();
                   setState(() {});
                 },
                 child: const Icon(
