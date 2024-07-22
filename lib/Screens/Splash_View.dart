@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:inventory_managment/Screens/HomePage.dart';
 import 'package:inventory_managment/Screens/LoginView.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../ViewModel/CustomerVIewModel.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -57,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
-                    fontSize: MediaQuery.sizeOf(context).height * 0.07),
+                    fontSize: MediaQuery.sizeOf(context).width * 0.07),
               ),
             ),
             SizedBox(
@@ -89,6 +92,16 @@ class _SplashScreenState extends State<SplashScreen> {
                       fontWeight: FontWeight.w500),
                 ),
               ],
+            ),
+            SizedBox(
+              height: height * 0.01,
+            ),
+            const Text(
+              'http://atifiy.com',
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 19,
+                  fontWeight: FontWeight.w500),
             ),
             SizedBox(
               height: height * 0.1,
