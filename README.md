@@ -1,4 +1,4 @@
-# inventory_managment
+# INVENTORY
 
 A new Flutter project.
 

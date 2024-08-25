@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:inventory_managment/Screens/HomePage.dart';
-import 'package:inventory_managment/Screens/LoginView.dart';
+import 'package:INVENTORY/Screens/HomePage.dart';
+import 'package:INVENTORY/Screens/LoginView.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -56,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             Center(
               child: Text(
-                'Khan Traders',
+                'Invoicely',
                 style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,

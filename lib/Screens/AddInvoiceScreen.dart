@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:connectivity/connectivity.dart';
 import 'package:provider/provider.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import '../Components/Drawer.dart';
 import '../Model/CustomerAndProductModel.dart';
 import '../Model/drop down db.dart';
+import '../Model/localHelper.dart';
 import '../Repository/AddInvoiceRepo.dart';
 import '../ViewModel/InvoiceByOrderFreeModel.dart';
 
@@ -19,7 +20,7 @@ class AddInvoiceScreen extends StatefulWidget {
 }
 
 class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
-  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   late InvoiceProvider _invoiceProvider;
   final DropDownDb _dbHelper = DropDownDb();
 
@@ -125,7 +126,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
       backgroundColor: Colors.white,
       drawer: const AppDrawer(),
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           'Add Invoice',
           style: TextStyle(color: Colors.black),
@@ -136,6 +137,8 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
             return ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
               onPressed: () async {
+                final connectivityResult =
+                    await (Connectivity().checkConnectivity());
                 _updateInvoiceReadyStatus();
                 if (_isInvoiceReady) {
                   value.loading2();
@@ -144,24 +147,29 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                         .jsonCustomersResponse
                         .firstWhere((customer) =>
                             customer['id'] == value.selectedCustomer);
+                    if (connectivityResult == ConnectivityResult.none) {
+                      // Save to local database
 
-                    await AddInvoiceRepo().addInvoiceApi(
-                      subtotal: value.total_price,
-                      cName: selectedCustomer['name'],
-                      cAddress: value.customerAddressController.text,
-                      cPhone: value.customerPhoneController.text,
-                      products: value.selectedProducts,
-                    );
+                      final invoiceData = {
+                        'subtotal': value.total_price,
+                        'cName': selectedCustomer['name'],
+                        'cAddress': value.customerAddressController.text,
+                        'cPhone': value.customerPhoneController.text,
+                        'products': value.selectedProducts.join(','),
+                      };
+                    } else {
+                      // Send to API
+                      await AddInvoiceRepo().addInvoiceApi(
+                        subtotal: value.total_price,
+                        cName: selectedCustomer['name'],
+                        cAddress: value.customerAddressController.text,
+                        cPhone: value.customerPhoneController.text,
+                        products: value.selectedProducts,
+                      );
+                    }
 
                     ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Added Successfully')));
-                    setState(() {
-                      _invoiceProvider.selectedCustomer = 'Select';
-                      _invoiceProvider.customerAddressController.clear();
-                      _invoiceProvider.customerPhoneController.clear();
-                      _invoiceProvider.selectedProducts.clear();
-                      _invoiceProvider.selectedProduct = 'Select';
-                    });
                   } catch (error) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       backgroundColor: Colors.red,
@@ -170,6 +178,13 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                   } finally {
                     value.loading2();
                   }
+                  setState(() {
+                    _invoiceProvider.selectedCustomer = 'Select';
+                    _invoiceProvider.customerAddressController.clear();
+                    _invoiceProvider.customerPhoneController.clear();
+                    _invoiceProvider.selectedProducts.clear();
+                    _invoiceProvider.selectedProduct = 'Select';
+                  });
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     backgroundColor: Colors.red,
@@ -196,16 +211,19 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
               color: Colors.white,
             ),
             onPressed: () async {
-              _connectivitySubscription =
-                  Connectivity().onConnectivityChanged.listen((result) async {
-                if (result == ConnectivityResult.mobile ||
-                    result == ConnectivityResult.wifi) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Refreshing')));
-                  await _fetchData();
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('No internet connection')));
+              _connectivitySubscription = Connectivity()
+                  .onConnectivityChanged
+                  .listen((List<ConnectivityResult> _resultt) async {
+                for (ConnectivityResult result in _resultt) {
+                  if (ConnectivityResult.mobile == result ||
+                      result == ConnectivityResult.wifi) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Refreshing')));
+                    await _fetchData();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('No internet connection')));
+                  }
                 }
               });
             },
@@ -241,7 +259,8 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                       .jsonCustomersResponse
                       .firstWhere((customer) => customer['name'] == newValue);
                   setState(() {
-                    _invoiceProvider.selectedCustomer = selectedCustomer['id'];
+                    _invoiceProvider.selectedCustomer =
+                        selectedCustomer['id'].toString();
                     _invoiceProvider.customerAddressController.text =
                         selectedCustomer['address'];
                     _invoiceProvider.customerPhoneController.text =
@@ -307,14 +326,16 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                     final selectedProduct = _invoiceProvider
                         .jsonProductsResponse
                         .firstWhere((product) => product['name'] == newValue);
-                    _invoiceProvider.selectedProduct = selectedProduct['id'];
+                    _invoiceProvider.selectedProduct =
+                        selectedProduct['id'].toString();
                     final alreadyAdded = _invoiceProvider.selectedProducts
                         .any((product) => product.id == selectedProduct['id']);
                     if (!alreadyAdded) {
                       _invoiceProvider.selectedProducts.add(Product(
-                        id: selectedProduct['id'],
+                        id: selectedProduct['id'].toString(),
                         name: selectedProduct['name'],
-                        price: double.parse(selectedProduct['price']),
+                        price:
+                            double.parse(selectedProduct['price'].toString()),
                       ));
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

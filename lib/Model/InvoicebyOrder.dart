@@ -1,15 +1,14 @@
-
 class Order {
-  final String id;
-  final String orderId;
-  final String discount;
-  final String subtotal;
-  final String grandTotal;
-  final String customerName;
-  final String customerAddress;
-  final String customerPhone;
-  final String date;
-  final String user;
+  final dynamic id;
+  final dynamic orderId;
+  final dynamic discount;
+  final dynamic subtotal;
+  final dynamic grandTotal;
+  final dynamic customerName;
+  final dynamic customerAddress;
+  final dynamic customerPhone;
+  final dynamic date;
+  final dynamic user;
 
   Order({
     required this.id,
@@ -41,14 +40,14 @@ class Order {
 }
 
 class Product {
-  final String id;
+  final dynamic id;
   final String name;
-  final String unitPrice;
-  final String quantity;
-  final String totalPrice;
-  final String orderId;
-  final String productId;
-  final String date;
+  final dynamic unitPrice;
+  final dynamic quantity;
+  final dynamic totalPrice;
+  final dynamic orderId;
+  final dynamic productId;
+  final dynamic date;
 
   Product({
     required this.id,

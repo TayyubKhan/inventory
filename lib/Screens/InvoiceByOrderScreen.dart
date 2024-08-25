@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:inventory_managment/Repository/InvoiceByOrder.dart';
+import 'package:INVENTORY/Repository/InvoiceByOrder.dart';
 
 import '../Components/Drawer.dart';
 import '../Model/InvoicebyOrder.dart';
 
 class SearchInvoiceScreen extends StatefulWidget {
-  const SearchInvoiceScreen({super.key});
+  final String invoiceId;
+  const SearchInvoiceScreen({super.key, this.invoiceId = ''});
 
   @override
   _SearchInvoiceScreenState createState() => _SearchInvoiceScreenState();
@@ -24,8 +23,22 @@ class _SearchInvoiceScreenState extends State<SearchInvoiceScreen> {
     });
   }
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (widget.invoiceId != '') {
+      fetchInvoice();
+    }
+  }
+
   void fetchInvoice() async {
-    final String orderId = _orderIdController.text;
+    String orderId;
+    if (widget.invoiceId == '') {
+      orderId = _orderIdController.text;
+    } else {
+      orderId = widget.invoiceId.toString();
+    }
     _startLoading();
     await InvoiceByOrderRepo()
         .fetchInvoiceData(orderId)
@@ -40,6 +53,7 @@ class _SearchInvoiceScreenState extends State<SearchInvoiceScreen> {
         order = Order.fromJson(orderJson);
         products =
             List<Product>.from(productsJson.map((x) => Product.fromJson(x)));
+        print(products);
       });
     });
   }
@@ -85,31 +99,39 @@ class _SearchInvoiceScreenState extends State<SearchInvoiceScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextFormField(
-                cursorColor: Colors.white,
-                style: const TextStyle(color: Colors.black),
-                controller: _orderIdController,
-                decoration: const InputDecoration(
-                    labelStyle: TextStyle(color: Colors.black),
-                    labelText: 'Enter Order ID',
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black87),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
-                    )),
-              ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.black),
-                ),
-                onPressed: fetchInvoice,
-                child: const Text(
-                  'Get Invoice',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
+              widget.invoiceId == ''
+                  ? Column(
+                      children: [
+                        TextFormField(
+                          keyboardType: TextInputType.number,
+                          cursorColor: Colors.white,
+                          style: const TextStyle(color: Colors.black),
+                          controller: _orderIdController,
+                          decoration: const InputDecoration(
+                              labelStyle: TextStyle(color: Colors.black),
+                              labelText: 'Enter Order ID',
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black87),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              )),
+                        ),
+                        const SizedBox(height: 16.0),
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor:
+                                WidgetStateProperty.all(Colors.black),
+                          ),
+                          onPressed: fetchInvoice,
+                          child: const Text(
+                            'Get Invoice',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    )
+                  : const SizedBox(),
               if (isLoading)
                 const Center(
                     child: CircularProgressIndicator(
@@ -147,6 +169,14 @@ class _SearchInvoiceScreenState extends State<SearchInvoiceScreen> {
                       DataCell(Text(order!.customerPhone)),
                     ]),
                     DataRow(cells: [
+                      const DataCell(Text('Subtotal')),
+                      DataCell(Text(order!.subtotal)),
+                    ]),
+                    DataRow(cells: [
+                      const DataCell(Text('Total')),
+                      DataCell(Text(order!.grandTotal)),
+                    ]),
+                    DataRow(cells: [
                       const DataCell(Text('Date')),
                       DataCell(Text(order!.date)),
                     ]),
@@ -172,9 +202,9 @@ class _SearchInvoiceScreenState extends State<SearchInvoiceScreen> {
                     rows: products.map((product) {
                       return DataRow(cells: [
                         DataCell(Text(product.name)),
-                        DataCell(Text(product.unitPrice)),
-                        DataCell(Text(product.quantity)),
-                        DataCell(Text(product.totalPrice)),
+                        DataCell(Text(product.unitPrice.toString())),
+                        DataCell(Text(product.quantity.toString())),
+                        DataCell(Text(product.totalPrice.toString())),
                       ]);
                     }).toList(),
                   ),

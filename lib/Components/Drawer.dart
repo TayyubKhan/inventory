@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_managment/Screens/CustomerScreen.dart';
-import 'package:inventory_managment/Screens/HomePage.dart';
-import 'package:inventory_managment/Screens/InvoiceByOrderScreen.dart';
-import 'package:inventory_managment/Screens/Invoices.dart';
+import 'package:INVENTORY/Screens/CustomerScreen.dart';
+import 'package:INVENTORY/Screens/HomePage.dart';
+import 'package:INVENTORY/Screens/InvoiceByOrderScreen.dart';
+import 'package:INVENTORY/Screens/Invoices.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Screens/AddInvoiceScreen.dart';
@@ -27,7 +27,7 @@ class AppDrawer extends StatelessWidget {
                 color: Colors.black,
               ),
               child: Text(
-                'Khan Traders',
+                'Invoicely',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,

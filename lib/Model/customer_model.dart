@@ -1,12 +1,12 @@
 class CustomerModel {
-  int? id;
-  String? name;
-  String? owner;
-  String? phone;
-  String? cnic;
-  String? address;
-  String? area;
-  String? day;
+  dynamic id;
+  dynamic name;
+  dynamic owner;
+  dynamic phone;
+  dynamic cnic;
+  dynamic address;
+  dynamic area;
+  dynamic day;
 
   CustomerModel(
       {this.id,

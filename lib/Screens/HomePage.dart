@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_managment/Repository/InvoiceByOrder.dart';
-import 'package:inventory_managment/Screens/AddInvoiceScreen.dart';
-import 'package:inventory_managment/Screens/CustomerScreen.dart';
-import 'package:inventory_managment/Screens/InvoiceByOrderScreen.dart';
-import 'package:inventory_managment/Screens/Invoices.dart';
-import 'package:inventory_managment/Screens/LoginView.dart';
+import 'package:INVENTORY/Repository/InvoiceByOrder.dart';
+import 'package:INVENTORY/Screens/AddInvoiceScreen.dart';
+import 'package:INVENTORY/Screens/CustomerScreen.dart';
+import 'package:INVENTORY/Screens/InvoiceByOrderScreen.dart';
+import 'package:INVENTORY/Screens/Invoices.dart';
+import 'package:INVENTORY/Screens/LoginView.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeView extends StatelessWidget {

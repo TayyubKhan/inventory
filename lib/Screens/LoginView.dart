@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_managment/Screens/HomePage.dart';
-import 'package:inventory_managment/Repository/login_repo.dart';
+import 'package:INVENTORY/Screens/HomePage.dart';
+import 'package:INVENTORY/Repository/login_repo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginView extends StatelessWidget {
@@ -128,13 +128,18 @@ class _LoginFormState extends State<LoginForm> {
               backgroundColor: MaterialStateProperty.all(Colors.black87)),
           onPressed: _isLoading ? null : _login,
           child: _isLoading
-              ? const CircularProgressIndicator(
-            color: Colors.white,
-          )
+              ? const Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  ),
+                )
               : const Text(
-            'Login',
-            style: TextStyle(color: Colors.white),
-          ),
+                  'Login',
+                  style: TextStyle(color: Colors.white),
+                ),
         ),
         if (_errorMessage.isNotEmpty)
           Text(
@@ -202,10 +207,9 @@ class _LoginFormState extends State<LoginForm> {
         _errorMessage = '';
       });
     } catch (error) {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = 'Error: $error';
-      });
+      _isLoading = false;
+      _errorMessage = 'Error: $error';
+      setState(() {});
     }
   }
 }

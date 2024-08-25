@@ -1,13 +1,28 @@
-import 'package:flutter/cupertino.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'Repository/AddInvoiceRepo.dart';
+import 'Repository/saveDataRepo.dart';
 import 'Screens/AddInvoiceScreen.dart';
 import 'Screens/Splash_View.dart';
 import 'ViewModel/CustomerVIewModel.dart';
 import 'ViewModel/InvoiceByOrderFreeModel.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final connectivity = Connectivity();
+  final syncService = SyncService();
+
+  // Check connectivity status
+  // Listen for connectivity changes
+  connectivity.onConnectivityChanged.listen((result) async {
+    if (result[0] != ConnectivityResult.none) {
+      await syncService.syncInvoices(); // Call the sync function without await
+      SaveDataRepo().fetchData();
+    }
+  });
+
   runApp(const MyApp());
 }
 
@@ -84,7 +99,6 @@ class MyApp extends StatelessWidget {
           ),
           primaryColor: Colors.black, // Set primary color to blue
           colorScheme: ColorScheme.fromSwatch(
-
               primarySwatch: customBlack), // Use whiteswatch for color scheme
           useMaterial3: true,
         ),

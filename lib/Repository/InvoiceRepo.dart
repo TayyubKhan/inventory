@@ -42,13 +42,14 @@ class InvoiceRepo {
 
   Future<List<Invoices>> refreshInvoices() async {
     try {
+      SharedPreferences sp = await SharedPreferences.getInstance();
+
       final response = await http.get(Uri.parse(
-          'https://a.thekhantraders.com/api/get_invoices.php?type=get&user=1'));
+          'https://a.thekhantraders.com/api/get_invoices.php?type=get&user=${sp.getString('userId')}'));
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         final List<Invoices> invoices =
             data.map((item) => Invoices.fromJson(item)).toList();
-
         // Save invoices to the local database
         await _dbHelper.deleteInvoices(); // Clear existing data
         for (Invoices invoice in invoices) {

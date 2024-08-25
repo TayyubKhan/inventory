@@ -1,10 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import for clipboard functionality
 
 import '../Components/Drawer.dart';
 import '../Model/InvoiceModel.dart';
 import '../Repository/InvoiceRepo.dart';
+import 'InvoiceByOrderScreen.dart';
 
 class InvoiceScreen extends StatefulWidget {
   const InvoiceScreen({super.key});
@@ -29,6 +29,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       setState(() {
         _futureInvoices = Future.value(invoices);
       });
+      print(invoices.length);
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Failed to refresh invoices: $error'),
@@ -69,8 +70,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                   child: CircularProgressIndicator(
-                    color: Colors.black,
-                  ));
+                color: Colors.black,
+              ));
             } else if (snapshot.hasError) {
               return const Center(child: Text('Try again later'));
             } else if (snapshot.hasData) {
@@ -123,45 +124,58 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     ],
                     rows: invoices
                         .map((invoice) => DataRow(
-                      cells: <DataCell>[
-                        DataCell(
-                          Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Clipboard.setData(ClipboardData(
-                                      text: invoice.orderId ?? ''));
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                    content: Text(
-                                        'Order ID copied to clipboard'),
-                                  ));
-                                },
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.content_copy,
-                                      color: Colors.black,
-                                    ),
-                                    const SizedBox(
-                                        width:
-                                        4), // Adjust spacing as needed
-                                    Text(invoice.orderId ?? ''),
-                                  ],
+                              cells: <DataCell>[
+                                DataCell(
+                                  Row(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          Clipboard.setData(ClipboardData(
+                                              text: invoice.orderId ?? ''));
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                            content: Text(
+                                                'Order ID copied to clipboard'),
+                                          ));
+                                        },
+                                        child: Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.content_copy,
+                                              color: Colors.black,
+                                            ),
+                                            const SizedBox(
+                                                width:
+                                                    4), // Adjust spacing as needed
+                                            InkWell(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              SearchInvoiceScreen(
+                                                                invoiceId: invoice
+                                                                    .orderId
+                                                                    .toString(),
+                                                              )));
+                                                },
+                                                child: Text(
+                                                    invoice.orderId ?? '')),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        DataCell(Text(invoice.discount ?? '')),
-                        DataCell(Text(invoice.subtotal ?? '')),
-                        DataCell(Text(invoice.grandTotal ?? '')),
-                        DataCell(Text(invoice.cName ?? '')),
-                        DataCell(Text(invoice.cAddress ?? '')),
-                        DataCell(Text(invoice.cPhone ?? '')),
-                        DataCell(Text(invoice.date ?? '')),
-                      ],
-                    ))
+                                DataCell(Text(invoice.discount ?? '')),
+                                DataCell(Text(invoice.subtotal ?? '')),
+                                DataCell(Text(invoice.grandTotal ?? '')),
+                                DataCell(Text(invoice.cName ?? '')),
+                                DataCell(Text(invoice.cAddress ?? '')),
+                                DataCell(Text(invoice.cPhone ?? '')),
+                                DataCell(Text(invoice.date ?? '')),
+                              ],
+                            ))
                         .toList(),
                   ),
                 ),
